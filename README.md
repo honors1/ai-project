@@ -1,2 +1,2 @@
-# api-book-part-three
-Source code for Part 3 of Hands on APIs for AI and Data Science
+# 3부
+AI와 데이터 사이언스 API 소스 코드

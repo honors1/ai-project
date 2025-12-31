@@ -1,2 +1,2 @@
-# Chapter 14
-Calling APIs with LangChain
+# 14장
+langChain으로 API 호출하기

@@ -12,7 +12,7 @@ try:
             from swcpy.swc_client import League, Team
 except ImportError:
     raise ImportError(
-        "swcpy is not installed. Please install it."
+        "swcpy가 설치돼 있지 않습니다. 설치 후 진행하세요."
     )
 
 config = SWCConfig(backoff=False)
@@ -25,7 +25,7 @@ class HealthCheckInput(BaseModel):
 class HealthCheckTool(BaseTool):
     name: str = "HealthCheck"
     description: str = (
-            "useful to check if the API is running before you make other calls"
+            "다른 API 호출 전에 API가 정상적으로 동작하는지 확인할 때 사용합니다."
     )
     args_schema: Type[HealthCheckInput] = HealthCheckInput
     return_direct: bool = False
@@ -33,7 +33,7 @@ class HealthCheckTool(BaseTool):
     def _run(
         self, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
-        """Use the tool to check if the API is running."""
+        """API의 상태를 확인합니다."""
         health_check_response = local_swc_client.get_health_check()
         return health_check_response.text
     
@@ -41,13 +41,13 @@ class HealthCheckTool(BaseTool):
 class LeaguesInput(BaseModel):
     league_name: Optional[str] = Field(
          default=None, 
-         description="league name. Leave blank or None to get all leagues.")
+         description="리그 이름입니다. 전체 리그를 조회하려면 비워 두거나 None으로 설정하세요.")
 
 class ListLeaguesTool(BaseTool):
     name: str = "ListLeagues"
     description: str = (
-        "get a list of leagues from SportsWorldCentral. "
-        "Leagues contain teams if they are present."
+        "SportsWorldCentral에서 리그 정보를 조회합니다."
+        "리그에 팀이 있는 경우 함께 반환됩니다."
     )
     args_schema: Type[LeaguesInput] = LeaguesInput
     return_direct: bool = False
@@ -56,28 +56,27 @@ class ListLeaguesTool(BaseTool):
         self, league_name: Optional[str] = None, 
         run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> List[League]:
-        """Use the tool to get a list of leagues from SportsWorldCentral."""
-        # Call the API with league_name, which could be None
+        """SportsWorldCentral에서 리그 정보를 가져옵니다."""
+        # 리그 이름으로 API를 호출한다. None도 가능하다.
         list_leagues_response = local_swc_client.list_leagues(league_name=league_name)
         return list_leagues_response
 
 class TeamsInput(BaseModel):
     team_name: Optional[str] = Field(
          default=None, 
-         description="Name of the team to search for. Leave blank or None to get all teams.")
+         description="조회할 팀 이름입니다. 전체 팀을 조회하려면 비워 두거나 None으로 두세요.")
     league_id: Optional[int] = Field(
          default=None, 
          description=(
-              "League ID from a league. You must provide a numerical League ID. "
-              "Leave blank or None to get teams from all leagues."
+              "리그의 ID(숫자)입니다. 전체 리그의 팀을 조회하려면 비워 두세요."
               ))
 
 class ListTeamsTool(BaseTool):
     name: str = "ListTeams"
     description: str = (
-         "Get a list of teams from SportsWorldCentral. Teams contain players if they are "
-         "present. Optionally provide a numerical League ID to filter teams "
-         "from a specific league.")
+         "SportsWorldCentral에서 팀 목록을 조회합니다."
+         "팀 내에 선수가 있는 경우 함께 반환됩니다."
+         "특정 리그의 팀만 조회하려면 리그 ID를 입력할 수 있습니다.")
     args_schema: Type[TeamsInput] = TeamsInput
     return_direct: bool = False
 
@@ -86,7 +85,7 @@ class ListTeamsTool(BaseTool):
         league_id: Optional[int] = None, 
         run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> List[Team]:
-        """Use the tool to get a list of teams from SportsWorldCentral."""
+        """SportsWorldCentral에서 팀 목록을 조회합니다."""
         list_teams_response = local_swc_client.list_teams(
              team_name=team_name, league_id= league_id)
         return list_teams_response
@@ -94,6 +93,6 @@ class ListTeamsTool(BaseTool):
 
 class SportsWorldCentralToolkit(BaseToolkit):
     def get_tools(self) -> List[BaseTool]:
-        """Return the list of tools in the toolkit."""
+        """툴킷에 포함된 도구 목록을 반환합니다."""
         return [HealthCheckTool(), ListLeaguesTool(), ListTeamsTool()]
 
